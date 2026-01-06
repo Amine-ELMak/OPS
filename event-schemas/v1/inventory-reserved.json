@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "required": ["orderId", "reservationId"],
+  "properties": {
+    "orderId": { "type": "string" },
+    "reservationId": { "type": "string" }
+  }
+}
