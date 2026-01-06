@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "required": ["orderId", "failureReason"],
+  "properties": {
+    "orderId": { "type": "string" },
+    "failureReason": { "type": "string" }
+  }
+}

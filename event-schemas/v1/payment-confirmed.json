@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "required": ["orderId", "paymentId"],
+  "properties": {
+    "orderId": { "type": "string" },
+    "paymentId": { "type": "string" }
+  }
+}

@@ -26,3 +26,16 @@ This model enables:
 - Eventual consistency
 - Independent deployment
 - Failure recovery via replay
+
+## Event Envelope & Schema Versioning
+
+All events use a shared envelope that provides:
+- Idempotency via eventId
+- Traceability via aggregateId
+- Forward compatibility via versioning
+
+Payloads contain only business data and are validated
+against JSON schemas.
+
+This guarantees safe replay and consumer recovery.
+
