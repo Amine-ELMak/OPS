@@ -1,0 +1,68 @@
+version: "3.8"
+
+services:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+
+  kafka-init:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: kafka-init
+    depends_on:
+      - kafka
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      echo "Waiting for Kafka..." &&
+      sleep 10 &&
+
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists \
+        --topic order-events --partitions 3 --replication-factor 1 &&
+
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists \
+        --topic payment-events --partitions 3 --replication-factor 1 &&
+
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists \
+        --topic inventory-events --partitions 3 --replication-factor 1 &&
+
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists \
+        --topic shipping-events --partitions 3 --replication-factor 1 &&
+
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists \
+        --topic order-events.DLT --partitions 1 --replication-factor 1 &&
+
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists \
+        --topic payment-events.DLT --partitions 1 --replication-factor 1 &&
+
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists \
+        --topic inventory-events.DLT --partitions 1 --replication-factor 1 &&
+
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists \
+        --topic shipping-events.DLT --partitions 1 --replication-factor 1 &&
+
+      echo "Kafka topics created."
